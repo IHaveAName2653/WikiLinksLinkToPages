@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- <TargetFramework>net472</TargetFramework> -->
+	<TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- CHANGE THIS PATH TO YOUR INSTALL -->
+  <PropertyGroup>
+    <ResonitePath>C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
+  </PropertyGroup>
+
+  <!-- Core Resonite game assemblies -->
+  <ItemGroup>
+    <Reference Include="FrooxEngine">
+      <HintPath>$(ResonitePath)FrooxEngine.dll</HintPath>
+    </Reference>
+
+    <Reference Include="ProtoFlux.Core">
+      <HintPath>$(ResonitePath)ProtoFlux.Core.dll</HintPath>
+    </Reference>
+
+    <Reference Include="ProtoFlux.Nodes.Core">
+      <HintPath>$(ResonitePath)ProtoFlux.Nodes.Core.dll</HintPath>
+    </Reference>
+
+    <Reference Include="Elements.Core">
+      <HintPath>$(ResonitePath)Elements.Core.dll</HintPath>
+    </Reference>
+
+    <Reference Include="Renderite.Shared">
+      <HintPath>$(ResonitePath)Renderite.Shared.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- RML + Harmony + Hot Reload -->
+  <ItemGroup>
+    <Reference Include="ResoniteModLoader">
+      <HintPath>$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
+    </Reference>
+
+    <Reference Include="0Harmony">
+      <HintPath>$(ResonitePath)rml_libs\0Harmony.dll</HintPath>
+    </Reference>
+
+    <Reference Include="ResoniteHotReloadLib">
+      <HintPath>$(ResonitePath)rml_libs\ResoniteHotReloadLib.dll</HintPath>
+    </Reference>
+
+    <Reference Include="ResoniteHotReloadLibCore">
+      <HintPath>$(ResonitePath)rml_libs\ResoniteHotReloadLibCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Auto deploy after build -->
+  <Target Name="PostBuild" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll"
+        DestinationFolder="$(ResonitePath)rml_mods\"
+        Retries="0"
+        RetryDelayMilliseconds="0"
+        ContinueOnError="WarnAndContinue" />
+
+    <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll"
+        DestinationFolder="$(ResonitePath)rml_mods\HotReloadMods\"
+        RetryDelayMilliseconds="0"
+        ContinueOnError="WarnAndContinue" />
+	</Target>
+
+</Project>

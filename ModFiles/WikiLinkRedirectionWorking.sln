@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WikiLinkRedirectionWorking", "WikiLinkRedirectionWorking.csproj", "{B5B78FF0-41F0-231F-E8D5-FDE1C405ED0F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B5B78FF0-41F0-231F-E8D5-FDE1C405ED0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5B78FF0-41F0-231F-E8D5-FDE1C405ED0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5B78FF0-41F0-231F-E8D5-FDE1C405ED0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5B78FF0-41F0-231F-E8D5-FDE1C405ED0F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E1028D85-0593-43F5-BBB7-6D3C4ED1C474}
+	EndGlobalSection
+EndGlobal
