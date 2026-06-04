@@ -2,6 +2,8 @@ using HarmonyLib;
 using Elements.Core;
 using System;
 using System.Collections.Generic;
+using FrooxEngine;
+using Elements.Assets;
 
 namespace WikiLinks;
 
@@ -13,6 +15,8 @@ public static partial class ComplexTypes
 	public static void Patch(
 		Type type, ref string __result)
 	{
+		// Disable the mod
+		if (!WikiLinks.remap_types) return;
 		// This runs the normal check first
 
 		WikiLinks.Msg($"PrePatch {type.Name} -> {__result}");
@@ -88,4 +92,43 @@ public static partial class ComplexTypes
 		"string", "colorx", "char"
 	};
 	static bool IsValidGenericType(string part) => GenericTypes.Contains(part.ToLower());
+
+	[HarmonyPostfix]
+	[HarmonyPatch(typeof(Hyperlink), "AttachForWikiPage")]
+	public static void AttachForWikiPagePatch(Slot slot, Type type, Hyperlink __result)
+	{
+		if (__result == null || slot == null) return;
+		slot.Tag = "WikiLink";
+	}
+
+	[HarmonyPrefix]
+	[HarmonyPatch(typeof(Hyperlink), "Open")]
+	public static bool OpenPatch(Hyperlink __instance, ref bool __result)
+	{
+		if (!WikiLinks.document_style) return true;
+		if (__instance?.Slot?.Tag != "WikiLink") return true;
+
+		Uri uri = new Uri(__instance.URL.Value.ToString());
+		string searchUrl = $"{uri.Scheme}://{uri.Host}/api/pdf{uri.AbsolutePath}";
+
+		WikiLinks.Msg($"[WikiLink intercepted] {searchUrl}");
+
+		HelperFunctions.OpenUrl(searchUrl, __instance.Engine);
+
+		return false;
+	}
+}
+
+public class HelperFunctions
+{
+	public static void OpenUrl(string path, Engine engine)
+	{
+		HandleOpenWorldURL([path], engine);
+	}
+	public static async void HandleOpenWorldURL(List<string> openUrl, Engine engine)
+	{
+		World targetWorld = engine.WorldManager.FocusedWorld;
+		targetWorld.LocalUser.GetPointInFrontOfUser(out var point, out var rotation, float3.Backward);
+		UniversalImporter.Import(AssetClass.Document, openUrl, targetWorld, point, rotation);
+	}
 }

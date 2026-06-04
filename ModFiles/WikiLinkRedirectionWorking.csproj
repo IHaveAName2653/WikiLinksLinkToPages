@@ -33,6 +33,10 @@
     <Reference Include="Renderite.Shared">
       <HintPath>$(ResonitePath)Renderite.Shared.dll</HintPath>
     </Reference>
+
+    <Reference Include="Elements.Assets">
+      <HintPath>$(ResonitePath)Elements.Assets.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <!-- RML + Harmony + Hot Reload -->
