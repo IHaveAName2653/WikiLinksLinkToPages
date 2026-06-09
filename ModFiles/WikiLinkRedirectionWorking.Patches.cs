@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using FrooxEngine;
 using Elements.Assets;
+using FrooxEngine.Store;
 
 namespace WikiLinks;
 
@@ -108,10 +109,8 @@ public static partial class ComplexTypes
 		if (!WikiLinks.document_style) return true;
 		if (__instance?.Slot?.Tag != "WikiLink") return true;
 
-		Uri uri = new Uri(__instance.URL.Value.ToString());
+		Uri uri = new(__instance.URL.Value.ToString());
 		string searchUrl = $"{uri.Scheme}://{uri.Host}/api/pdf{uri.AbsolutePath}";
-
-		WikiLinks.Msg($"[WikiLink intercepted] {searchUrl}");
 
 		HelperFunctions.OpenUrl(searchUrl, __instance.Engine);
 
@@ -123,12 +122,17 @@ public class HelperFunctions
 {
 	public static void OpenUrl(string path, Engine engine)
 	{
-		HandleOpenWorldURL([path], engine);
+		HandleOpenWorldURL(path, engine);
 	}
-	public static async void HandleOpenWorldURL(List<string> openUrl, Engine engine)
+	public static async void HandleOpenWorldURL(string openUrl, Engine engine)
 	{
 		World targetWorld = engine.WorldManager.FocusedWorld;
 		targetWorld.LocalUser.GetPointInFrontOfUser(out var point, out var rotation, float3.Backward);
-		UniversalImporter.Import(AssetClass.Document, openUrl, targetWorld, point, rotation);
+
+		string localPath = await engine.AssetManager.GatherAssetFile(new Uri(openUrl), priority: 0);
+		if (string.IsNullOrEmpty(localPath)) return;
+
+		Uri LocalAsset = await engine.LocalDB.ImportLocalAssetAsync(localPath, LocalDB.ImportLocation.Original);
+		UniversalImporter.Import(AssetClass.Document, [LocalAsset.ToString()], targetWorld, point, rotation);
 	}
 }
