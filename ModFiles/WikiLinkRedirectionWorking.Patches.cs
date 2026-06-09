@@ -20,8 +20,6 @@ public static partial class ComplexTypes
 		if (!WikiLinks.remap_types) return;
 		// This runs the normal check first
 
-		WikiLinks.Msg($"PrePatch {type.Name} -> {__result}");
-
 		if (string.IsNullOrEmpty(__result)) return;
 
 		// Split into its component parts
@@ -75,8 +73,6 @@ public static partial class ComplexTypes
 		// Edge Case
 		// Object casts already covered as generic type
 		if (__result.StartsWith("Cast")) __result = "ValueCast";
-
-		WikiLinks.Msg($"PostPatch {type.Name} -> {__result}");
 	}
 
 	private static readonly HashSet<string> GenericTypes = new()
@@ -106,33 +102,29 @@ public static partial class ComplexTypes
 	[HarmonyPatch(typeof(Hyperlink), "Open")]
 	public static bool OpenPatch(Hyperlink __instance, ref bool __result)
 	{
-		if (!WikiLinks.document_style) return true;
-		if (__instance?.Slot?.Tag != "WikiLink") return true;
+		if (!WikiLinks.document_style || __instance?.Slot?.Tag != "WikiLink") return true;
 
+		// Convert from a normal wiki Url to a PDF wiki Url
 		Uri uri = new(__instance.URL.Value.ToString());
-		string searchUrl = $"{uri.Scheme}://{uri.Host}/api/pdf{uri.AbsolutePath}";
+		Uri searchUri = new($"{uri.Scheme}://{uri.Host}/api/pdf{uri.AbsolutePath}");
 
-		HelperFunctions.OpenUrl(searchUrl, __instance.Engine);
+		HandleOpenWorldURL(searchUri, __instance.Engine);
 
 		return false;
 	}
-}
 
-public class HelperFunctions
-{
-	public static void OpenUrl(string path, Engine engine)
+	public static async void HandleOpenWorldURL(Uri openUrl, Engine engine)
 	{
-		HandleOpenWorldURL(path, engine);
-	}
-	public static async void HandleOpenWorldURL(string openUrl, Engine engine)
-	{
+		// Find where the user is in the world
 		World targetWorld = engine.WorldManager.FocusedWorld;
 		targetWorld.LocalUser.GetPointInFrontOfUser(out var point, out var rotation, float3.Backward);
 
-		string localPath = await engine.AssetManager.GatherAssetFile(new Uri(openUrl), priority: 0);
+		// Tries to get the asset locally before spawning display
+		string localPath = await engine.AssetManager.GatherAssetFile(openUrl, priority: 0);
 		if (string.IsNullOrEmpty(localPath)) return;
-
 		Uri LocalAsset = await engine.LocalDB.ImportLocalAssetAsync(localPath, LocalDB.ImportLocation.Original);
+
+		// Opens Uri as a PDF in front of the user.
 		UniversalImporter.Import(AssetClass.Document, [LocalAsset.ToString()], targetWorld, point, rotation);
 	}
 }
