@@ -117,7 +117,8 @@ public static partial class ComplexTypes
 	{
 		// Find where the user is in the world
 		World targetWorld = engine.WorldManager.FocusedWorld;
-		targetWorld.LocalUser.GetPointInFrontOfUser(out var point, out var rotation, float3.Backward);
+		Slot slot = targetWorld.LocalUser.LocalUserSpace.AddLocalSlot();
+		slot.PositionInFrontOfUser(float3.Backward);
 
 		// Tries to get the asset locally before spawning display
 		string localPath = await engine.AssetManager.GatherAssetFile(openUrl, priority: 0);
@@ -125,6 +126,7 @@ public static partial class ComplexTypes
 		Uri LocalAsset = await engine.LocalDB.ImportLocalAssetAsync(localPath, LocalDB.ImportLocation.Original);
 
 		// Opens Uri as a PDF in front of the user.
-		UniversalImporter.Import(AssetClass.Document, [LocalAsset.ToString()], targetWorld, point, rotation);
+		UniversalImporter.Import(AssetClass.Document, [LocalAsset.ToString()], targetWorld, slot.GlobalPosition, slot.GlobalRotation);
+		slot.Destroy();
 	}
 }
