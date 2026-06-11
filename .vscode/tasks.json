@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+            "label": "build Debug",
+            "command": "dotnet",
+            "type": "process",
+			"group": "build",
+            "args": [
+                "build",
+                "${workspaceFolder}/ModFiles/WikiLinkRedirectionWorking.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+		{
+            "label": "build Release",
+            "command": "dotnet",
+			"group": "build",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/ModFiles/WikiLinkRedirectionWorking.csproj",
+                "-c",
+                "Release"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+	]
+}

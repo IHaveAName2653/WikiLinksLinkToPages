@@ -10,6 +10,7 @@
   <!-- CHANGE THIS PATH TO YOUR INSTALL -->
   <PropertyGroup>
     <ResonitePath>C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
+    <ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
   </PropertyGroup>
 
   <!-- Core Resonite game assemblies -->
